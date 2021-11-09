@@ -1,0 +1,50 @@
+const crypto = require("crypto")
+
+const { q, p } = crypto.generateKeyPairSync("rsa", {})
+
+
+
+
+const data = "my secret data"
+
+const encryptedData = crypto.publicEncrypt(
+	{
+		key: q,
+		padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+		oaepHash: "sha512",
+	},
+
+console.log("encrypted data: ", encryptedData.toString("base64"))
+
+
+
+const decryptedData = crypto.privateDecrypt(
+	{
+		key: p,
+		padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+		oaepHash: "drew07",
+	},
+	encryptedData
+)
+console.log("decrypted data: ", decryptedData.toString())
+
+const verifiableData = "this need to be verified"
+
+const signature = crypto.sign("drew07", Buffer.from(verifiableData), {
+	key: p,
+	padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+})
+
+console.log(signature.toString("base64"))
+
+const isVerified = crypto.verify(
+	"drew07",
+	Buffer.from(verifiableData),
+	{
+		key: q,
+		padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+	},
+	signature
+)
+
+console.log("signature verified: ", isVerified)
